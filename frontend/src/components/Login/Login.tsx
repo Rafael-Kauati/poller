@@ -1,6 +1,6 @@
-// Login.tsx
 import React, { useState } from 'react';
 import axios from 'axios';
+import './Login.css'; // Import the CSS file
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState<string>('');
@@ -16,17 +16,16 @@ const Login: React.FC = () => {
         password,
       });
 
-      // Store the JWT token in localStorage
       localStorage.setItem('token', response.data.token);
       setMessage('Login successful!');
-      console.log(response.data.token)
+      console.log(response.data.token);
     } catch (err) {
       setMessage('Login failed. Please check your credentials.');
     }
   };
 
   return (
-    <div>
+    <div className="login-container">
       <h2>Login</h2>
       <form onSubmit={handleLogin}>
         <input

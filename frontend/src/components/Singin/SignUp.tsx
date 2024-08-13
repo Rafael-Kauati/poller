@@ -1,6 +1,6 @@
-// SignUp.tsx (TypeScript)
 import React, { useState } from 'react';
 import axios from 'axios';
+import './SingUp.css'
 
 const SignUp: React.FC = () => {
   const [username, setUsername] = useState<string>('');
@@ -23,7 +23,7 @@ const SignUp: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className="signup-container">
       <h2>Sign Up</h2>
       <form onSubmit={handleSignUp}>
         <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
