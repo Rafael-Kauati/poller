@@ -1,16 +1,22 @@
 import React from 'react';
-import Login from './components/Login.tsx';
-import Protected from './components/Protected.tsx';
-import SignUp from './components/SignUp.tsx';
-
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Welcome from './components/Welcome/Welcome';
+import Login from './components/Login/Login';
+import SignUp from './components/Singin/SignUp';
+import Protected from './components/Protected';
+import './App.css';
 const App: React.FC = () => {
   return (
-    <div className="App">
-      <h1>Authentication Example</h1>
-      <SignUp />
-      <Login />
-      <Protected />
-    </div>
+    <Router>
+      <div className="App">
+        <Routes>
+          <Route path="/" element={<Welcome />} />
+          <Route path="/register" element={<SignUp />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/protected" element={<Protected />} />
+        </Routes>
+      </div>
+    </Router>
   );
 };
 
