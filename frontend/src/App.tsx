@@ -4,7 +4,7 @@ import Welcome from './components/Welcome/Welcome';
 import Login from './components/Login/Login';
 import SignUp from './components/Singin/SignUp';
 import Protected from './components/Protected';
-
+import './App.css';
 const App: React.FC = () => {
   return (
     <Router>
