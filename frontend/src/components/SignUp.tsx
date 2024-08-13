@@ -11,7 +11,7 @@ const SignUp: React.FC = () => {
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/register`, {
+      const res = await axios.post(`http://localhost:3000/register`, {
         username,
         email,
         password,
