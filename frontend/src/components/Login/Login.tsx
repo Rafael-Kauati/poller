@@ -10,12 +10,23 @@ const Login: React.FC = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Validate input fields
+    if (!email) {
+      setMessage('Email is required.');
+      return;
+    }
+    if (!password) {
+      setMessage('Password is required.');
+      return;
+    }
+
     try {
       const response = await axios.post(`http://localhost:3000/login`, {
         email,
         password,
       });
 
+      // Store the JWT token in localStorage
       localStorage.setItem('token', response.data.token);
       setMessage('Login successful!');
       console.log(response.data.token);
@@ -27,6 +38,7 @@ const Login: React.FC = () => {
   return (
     <div className="login-container">
       <h2>Login</h2>
+      {message && <p className="message">{message}</p>} {/* Display message at the top */}
       <form onSubmit={handleLogin}>
         <input
           type="email"
@@ -42,7 +54,6 @@ const Login: React.FC = () => {
         />
         <button type="submit">Login</button>
       </form>
-      {message && <p>{message}</p>}
     </div>
   );
 };
