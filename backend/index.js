@@ -65,6 +65,80 @@ app.post('/login', async (req, res) => {
   }
 });
 
+// Create a poll
+app.post('/polls', async (req, res) => {
+  const { title, description, poll_type } = req.body;
+  const userId = req.user.id; // Assuming user ID is available in request (authentication middleware needed)
+  
+  try {
+    const result = await pool.query(
+      'INSERT INTO polls (title, description, created_by, poll_type) VALUES ($1, $2, $3, $4) RETURNING *',
+      [title, description, userId, poll_type]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error('Error creating poll:', err);
+    res.status(500).send('Error creating poll');
+  }
+});
+
+// Add options to a poll
+app.post('/polls/:pollId/options', async (req, res) => {
+  const { pollId } = req.params;
+  const { label } = req.body;
+
+  try {
+    const result = await pool.query(
+      'INSERT INTO options (poll_id, label) VALUES ($1, $2) RETURNING *',
+      [pollId, label]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error('Error adding option:', err);
+    res.status(500).send('Error adding option');
+  }
+});
+
+// Vote on a poll
+app.post('/polls/:pollId/vote', async (req, res) => {
+  const { pollId } = req.params;
+  const { optionId } = req.body;
+  const userId = req.user.id; // Assuming user ID is available in request (authentication middleware needed)
+
+  try {
+    // Check if the user has already voted in this poll
+    const existingVote = await pool.query(
+      'SELECT * FROM votes WHERE poll_id = $1 AND user_id = $2',
+      [pollId, userId]
+    );
+    if (existingVote.rows.length > 0) {
+      return res.status(400).send('User has already voted in this poll');
+    }
+
+    // Insert the vote
+    await pool.query(
+      'INSERT INTO votes (poll_id, user_id, option_id) VALUES ($1, $2, $3)',
+      [pollId, userId, optionId]
+    );
+    res.status(201).send('Vote recorded');
+  } catch (err) {
+    console.error('Error voting:', err);
+    res.status(500).send('Error voting');
+  }
+});
+
+// Middleware for authentication (example placeholder)
+const authenticate = (req, res, next) => {
+  const token = req.headers['authorization']?.split(' ')[1];
+  if (!token) return res.status(401).send('No token provided');
+
+  jwt.verify(token, JWT_SECRET, (err, decoded) => {
+    if (err) return res.status(403).send('Failed to authenticate token');
+    req.user = decoded;
+    next();
+  });
+};
+
 // Protected Route Example
 app.get('/protected', (req, res) => {
   const token = req.headers['authorization']?.split(' ')[1];
