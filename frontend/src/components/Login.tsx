@@ -19,6 +19,7 @@ const Login: React.FC = () => {
       // Store the JWT token in localStorage
       localStorage.setItem('token', response.data.token);
       setMessage('Login successful!');
+      console.log(response.data.token)
     } catch (err) {
       setMessage('Login failed. Please check your credentials.');
     }

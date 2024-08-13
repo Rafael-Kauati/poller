@@ -5,6 +5,7 @@ const pool = require('./config/db');
 const dotenv = require('dotenv');
 const path = require('path');
 const morgan = require('morgan');
+const cors = require('cors');
 
 // Load environment variables from the root of the project
 dotenv.config({ path: path.resolve(__dirname, '../.env.development') });
@@ -14,6 +15,9 @@ app.use(express.json());
 
 // Morgan middleware for HTTP request logging
 app.use(morgan('dev'));
+
+// CORS configuration: Allow all origins
+app.use(cors());
 
 // JWT Secret should be loaded from environment variables
 const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_key';
@@ -28,7 +32,7 @@ app.post('/register', async (req, res) => {
       'INSERT INTO users (username, email, password) VALUES ($1, $2, $3)',
       [username, email, hashedPassword]
     );
-    console.log(`User registered successfully: ${username}`);
+    console.log(`User registered successfully: ${email}`);
     res.status(201).send('User registered');
   } catch (err) {
     console.error('Error registering user:', err);
