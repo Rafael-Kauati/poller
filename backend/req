@@ -1,0 +1,31 @@
+curl -X POST http://localhost:3000/register \
+                        -H "Content-Type: application/json" \
+                        -d '{
+                      "username": "mi5ochel miyers",
+                      "email": "m5m@example.com",
+                      "password": "securepassword123"
+                    }'
+
+curl -X POST http://localhost:3000/login \
+                        -H "Content-Type: application/json" \
+                        -d '{
+                      "email": "mi3ochel miyers",
+                      "password": "securepassword123"
+                    }'
+
+curl -X POST http://localhost:3000/polls \
+    -H "Content-Type: application/json" \
+    -d '{
+          "title": "Best Programming Language",
+          "description": "Vote for your favorite programming language.",
+          "poll_type": "single",  
+          "userId": 35  
+        }'
+
+
+curl -X POST http://localhost:3000/polls/11/vote \
+                       -H "Content-Type: application/json" \
+                       -d '{
+                         "optionId": 1,
+                         "userId":35
+                       }'
