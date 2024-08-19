@@ -84,19 +84,17 @@ app.post('/login', async (req, res) => {
         console.warn(`Login attempt failed: Invalid credentials - ${email}`);
         return res.status(400).send('Invalid credentials');
       }
-      
+      console.log(`User logged in successfully: ${email} with ID ${userId}`);
+      res.json({ userId: userId });
+
       res.status(201).json({ userId });
     } else {
       throw new Error('Unexpected result format');
     }
-    // Check if the password matches
-    
 
-    console.log(`User logged in successfully: ${email} with ID ${user.id}`);
-    res.json({ userId: user.id });
   } catch (err) {
     console.error('Error logging in:', err);
-    res.status(500).send('Error logging in');
+    //res.status(500).send('Error logging in');
   }
 });
 
