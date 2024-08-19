@@ -153,8 +153,17 @@ app.post('/polls/:pollId/vote', async (req, res) => {
   const { pollId } = req.params;
   const { optionId, userId } = req.body; // Include userId in the request body
 
+  const polltype = await pool.query(
+    'SELECT poll_type FROM polls WHERE id = $1',
+    [pollId]
+  )
+  console.log("Poll type ", polltype[0].poll_type)
+  const typpe = polltype[0].poll_type
+
+
   try {
     // Check if the user has already voted in this poll
+    if(typpe == "single"){
     const existingVote = await pool.query(
       'SELECT * FROM votes WHERE poll_id = $1 AND user_id = $2',
       [pollId, userId]
@@ -164,6 +173,7 @@ app.post('/polls/:pollId/vote', async (req, res) => {
       return res.status(400).send('User has already voted in this poll');
     }
 
+    }   
     // Insert the vote
     await pool.query(
       'INSERT INTO votes (poll_id, user_id, option_id) VALUES ($1, $2, $3)',

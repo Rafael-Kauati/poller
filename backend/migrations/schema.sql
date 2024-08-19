@@ -29,6 +29,6 @@ CREATE TABLE IF NOT EXISTS votes (
   poll_id INTEGER REFERENCES polls(id) ON DELETE CASCADE,
   user_id INTEGER REFERENCES users(id),
   option_id INTEGER REFERENCES options(id),
-  UNIQUE(poll_id, user_id),  -- Ensure a user can only vote once per poll
+  UNIQUE(poll_id, user_id),  -- make the user add non-unique
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

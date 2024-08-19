@@ -23,6 +23,15 @@ curl -X POST http://localhost:3000/polls \
           "userId": 36  
         }'
 
+curl -X POST http://localhost:3000/polls \
+    -H "Content-Type: application/json" \
+    -d '{
+          "title": "songs 2",
+          "description": "Vote for your favorite songs againg",
+          "poll_type": "multiple",  
+          "userId": 33  
+        }'       
+
 
 curl -X POST http://localhost:3000/polls/19/vote \
                        -H "Content-Type: application/json" \
@@ -30,3 +39,10 @@ curl -X POST http://localhost:3000/polls/19/vote \
                          "optionId": 1,
                          "userId":36
                        }'
+
+curl -X POST http://localhost:3000/polls/20/vote \
+                       -H "Content-Type: application/json" \
+                       -d '{
+                         "optionId": 1,
+                         "userId":36
+                       }'                      
