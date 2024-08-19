@@ -17,16 +17,16 @@ curl -X POST http://localhost:3000/login \
 curl -X POST http://localhost:3000/polls \
     -H "Content-Type: application/json" \
     -d '{
-          "title": "Best Programming Language",
-          "description": "Vote for your favorite programming language.",
+          "title": "songs",
+          "description": "Vote for your favorite songs",
           "poll_type": "single",  
-          "userId": 35  
+          "userId": 36  
         }'
 
 
-curl -X POST http://localhost:3000/polls/11/vote \
+curl -X POST http://localhost:3000/polls/19/vote \
                        -H "Content-Type: application/json" \
                        -d '{
                          "optionId": 1,
-                         "userId":35
+                         "userId":36
                        }'

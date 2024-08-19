@@ -159,8 +159,8 @@ app.post('/polls/:pollId/vote', async (req, res) => {
       'SELECT * FROM votes WHERE poll_id = $1 AND user_id = $2',
       [pollId, userId]
     );
-    console.log(existingVote)
-    if (Array.isArray(existingVote) && existingVote.length === 0) {
+    console.log("fetch res : ",existingVote)
+    if (Array.isArray(existingVote) && !(existingVote.length === 0)) {
       return res.status(400).send('User has already voted in this poll');
     }
 
