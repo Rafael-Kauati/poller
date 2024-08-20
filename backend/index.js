@@ -232,6 +232,146 @@ app.post('/polls/:pollId/vote', async (req, res) => {
 });
 
 
+// Fetch all polls
+app.get('/polls', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM polls');
+    console.log(result)
+    res.json(result);
+  } catch (err) {
+    console.error('Error fetching polls:', err);
+    res.status(500).send('Error fetching polls');
+  }
+});
+
+
+// Fetch all polls belonging to a user
+app.get('/users/:userId/polls', async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const result = await pool.query('SELECT * FROM polls WHERE created_by = $1', [userId]);
+    res.json(result);
+  } catch (err) {
+    console.error(`Error fetching polls for user ${userId}:`, err);
+    res.status(500).send('Error fetching polls for user');
+  }
+});
+
+
+// Fetch a poll by title
+app.get('/polls/title/:title', async (req, res) => {
+  const { title } = req.params;
+  try {
+    const result = await pool.query('SELECT * FROM polls WHERE title ILIKE $1', [`%${title}%`]);
+    res.json(result);
+  } catch (err) {
+    console.error(`Error fetching poll with title "${title}":`, err);
+    res.status(500).send('Error fetching poll by title');
+  }
+});
+
+
+// Fetch a poll and its options
+app.get('/polls/:pollId/options', async (req, res) => {
+  const { pollId } = req.params;
+
+  try {
+    // Perform a join between polls and options tables
+    const result = await pool.query(`
+      SELECT 
+        p.id AS poll_id, 
+        p.title AS poll_title, 
+        p.description AS poll_description, 
+        p.created_by AS poll_creator, 
+        p.poll_type AS poll_type,
+        p.created_at AS poll_created_at,
+        o.id AS option_id,
+        o.label AS option_label,
+        o.created_at AS option_created_at
+      FROM polls p
+      LEFT JOIN options o ON p.id = o.poll_id
+      WHERE p.id = $1
+    `, [pollId]);
+
+    if (result.length === 0) {
+      return res.status(404).send('Poll not found');
+    }
+
+    // Structure the response
+    const poll = {
+      id: result.poll_id,
+      title: result.poll_title,
+      description: result.poll_description,
+      created_by: result.poll_creator,
+      poll_type: result.poll_type,
+      created_at: result.poll_created_at,
+      options: result.map(row => ({
+        id: row.option_id,
+        label: row.option_label,
+        created_at: row.option_created_at,
+      })).filter(option => option.id !== null) // Filter out null options in case of polls with no options
+    };
+
+    res.json(poll);
+  } catch (err) {
+    console.error(`Error fetching poll and options for poll ${pollId}:`, err);
+    res.status(500).send('Error fetching poll and options');
+  }
+});
+
+
+
+app.get('/polls/:pollId/options/votes', async (req, res) => {
+  const { pollId } = req.params;
+
+  try {
+    // Perform a join between polls, options, and votes tables
+    const result = await pool.query(`
+      SELECT 
+        p.id AS poll_id, 
+        p.title AS poll_title, 
+        p.description AS poll_description, 
+        p.created_by AS poll_creator, 
+        p.poll_type AS poll_type,
+        p.created_at AS poll_created_at,
+        o.id AS option_id,
+        o.label AS option_label,
+        COUNT(v.id) AS vote_count
+      FROM polls p
+      LEFT JOIN options o ON p.id = o.poll_id
+      LEFT JOIN votes v ON o.id = v.option_id
+      WHERE p.id = $1
+      GROUP BY p.id, o.id
+    `, [pollId]);
+
+    if (result.length === 0) {
+      return res.status(404).send('Poll not found');
+    }
+
+    // Structure the response
+    const poll = {
+      id: result.poll_id,
+      title: result.poll_title,
+      description: result.poll_description,
+      created_by: result.poll_creator,
+      poll_type: result.poll_type,
+      created_at: result.poll_created_at,
+      options: result.map(row => ({
+        id: row.option_id,
+        label: row.option_label,
+        votes: parseInt(row.vote_count, 10)
+      })).filter(option => option.id !== null) // Filter out null options in case of polls with no options
+    };
+
+    res.json(poll);
+  } catch (err) {
+    console.error(`Error fetching poll and options with votes for poll ${pollId}:`, err);
+    res.status(500).send('Error fetching poll and options with votes');
+  }
+});
+
+
+
 // Protected Route Example
 app.get('/protected', authenticate, (req, res) => {
   console.log(`Accessing protected route - User ID: ${req.user.userId}`);

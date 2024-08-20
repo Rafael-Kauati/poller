@@ -56,4 +56,13 @@ curl -X POST http://localhost:3000/polls/2/vote \
                        -d '{
                          "optionId": 3,
                          "userId":2
-                       }'                      
+                       }'
+
+curl -X GET http://localhost:3000/polls
+
+curl -X GET http://localhost:3000/users/1/polls
+
+error down
+
+curl -X GET http://localhost:3000/polls/2/options
+
