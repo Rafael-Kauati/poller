@@ -164,16 +164,26 @@ app.post('/polls/:pollId/vote', async (req, res) => {
   try {
     // Check if the user has already voted in this poll
     if(typpe == "single"){
-    const existingVote = await pool.query(
-      'SELECT * FROM votes WHERE poll_id = $1 AND user_id = $2',
-      [pollId, userId]
-    );
-    console.log("fetch res : ",existingVote)
-    if (Array.isArray(existingVote) && !(existingVote.length === 0)) {
-      return res.status(400).send('User has already voted in this poll');
-    }
+      const existingVote = await pool.query(
+        'SELECT * FROM votes WHERE poll_id = $1 AND user_id = $2',
+        [pollId, userId]
+      );
+      console.log("fetch res : ",existingVote)
+      if (Array.isArray(existingVote) && !(existingVote.length === 0)) {
+        return res.status(400).send('User has already voted in this poll');
+      }
 
-    }   
+    }
+    else if(typpe == "multiple"){
+      const existingVote = await pool.query(
+        'SELECT * FROM votes WHERE poll_id = $1 AND user_id = $2 AND option_id = $3',
+        [pollId, userId,optionId ]
+      );
+      console.log("fetch res : ",existingVote)
+      if (Array.isArray(existingVote) && !(existingVote.length === 0)) {
+        return res.status(400).send('User has already voted in this option');
+      }
+    }
     // Insert the vote
     await pool.query(
       'INSERT INTO votes (poll_id, user_id, option_id) VALUES ($1, $2, $3)',

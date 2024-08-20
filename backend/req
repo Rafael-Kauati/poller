@@ -5,6 +5,13 @@ curl -X POST http://localhost:3000/register \
                                           "email": "rtpk@example.com",
                                           "password": "securepassword123"
                                         }'
+curl -X POST http://localhost:3000/register \
+                                                -H "Content-Type: application/json" \
+                                                -d '{
+                                          "username": "kaiser",
+                                          "email": "kaiser@example.com",
+                                          "password": "securepassword123"
+                                        }'
 
 curl -X POST http://localhost:3000/login \
                                                 -H "Content-Type: application/json" \
@@ -29,15 +36,19 @@ curl -X POST http://localhost:3000/polls \
           "title": "songs 2",
           "description": "Vote for your favorite songs againg",
           "poll_type": "multiple",  
-          "userId": 33  
+          "userId": 1 
         }'       
+curl -X POST http://localhost:3000/polls/1/options \
+                            -H "Content-Type: application/json" \
+                            -d '{
+                              "label": "rock"
+                            }'
 
-
-curl -X POST http://localhost:3000/polls/19/vote \
+curl -X POST http://localhost:3000/polls/1/vote \
                        -H "Content-Type: application/json" \
                        -d '{
                          "optionId": 1,
-                         "userId":36
+                         "userId":1
                        }'
 
 curl -X POST http://localhost:3000/polls/20/vote \
