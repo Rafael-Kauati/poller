@@ -34,6 +34,15 @@ const authenticate = (req, res, next) => {
   });
 };
 
+const checkUser = async (uid) => {
+  const result = await pool.query(
+    'SELECT email FROM users WHERE id = $1',
+    [uid]
+  );
+  console.log("User fetched : ",result)
+  
+}
+
 app.post('/register', async (req, res) => {
   const { username, email, password } = req.body;
   console.log(`Attempting to register user: ${username}, ${email}`);
@@ -152,6 +161,32 @@ app.post('/polls/:pollId/options', async (req, res) => {
 app.post('/polls/:pollId/vote', async (req, res) => {
   const { pollId } = req.params;
   const { optionId, userId } = req.body; // Include userId in the request body
+  const usercheck = checkUser(userId)
+
+
+  //Check if user exist
+  if(Array.isArray(usercheck) && !(usercheck.length === 0)){
+    return res.status(400).send(`User with id : ${userId} not found`)
+  }
+
+  //Check if poll exist
+  const checkpoll = await pool.query(
+    'SELECT title FROM polls WHERE id = $1',
+    [pollId]
+  )
+  if(Array.isArray(checkpoll) && checkpoll.length === 0){
+    return res.status(400).send(`Poll with id : ${pollId} not found`)
+  }
+
+
+  //Check if poll option exist
+  const checkoption = await pool.query(
+    'SELECT label FROM options WHERE id = $1',
+    [optionId]
+  )
+  if(Array.isArray(checkoption) && checkoption.length === 0){
+    return res.status(400).send(`Poll option with id : ${optionId} not found`)
+  }
 
   const polltype = await pool.query(
     'SELECT poll_type FROM polls WHERE id = $1',
