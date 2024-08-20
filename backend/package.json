@@ -16,7 +16,8 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.5.2",
     "morgan": "^1.10.0",
-    "pg": "^8.12.0"
+    "pg": "^8.12.0",
+    "pg-promise": "^11.9.1"
   },
   "devDependencies": {
     "cors": "^2.8.5"

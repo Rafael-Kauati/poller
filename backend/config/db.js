@@ -1,6 +1,6 @@
-const { Pool } = require('pg');
-
-const pool = new Pool({
+// backend/config/db.js
+const pgp = require('pg-promise')();
+const db = pgp({
   user: process.env.DB_USER || 'myuser',
   host: process.env.DB_HOST || 'localhost',
   database: process.env.DB_NAME || 'mydatabase',
@@ -8,4 +8,4 @@ const pool = new Pool({
   port: process.env.DB_PORT || 5432,
 });
 
-module.exports = pool;
+module.exports = db;
