@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './SingUp.css'
+import { useNavigate } from 'react-router-dom';
 
 const SignUp: React.FC = () => {
   const [username, setUsername] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [message, setMessage] = useState<string>('');
+  const navigate = useNavigate();
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,6 +38,8 @@ const SignUp: React.FC = () => {
         password,
       });
       setMessage('Registration successful!');
+      navigate('/polls');
+
     } catch (err) {
       setMessage('Registration failed. Please try again.');
     }

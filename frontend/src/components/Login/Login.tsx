@@ -1,11 +1,14 @@
+// src/components/Login/Login.tsx
 import React, { useState } from 'react';
 import axios from 'axios';
-import './Login.css'; // Import the CSS file
+import { useNavigate } from 'react-router-dom';
+import './Login.css'; // Ensure this file exists and contains the styles
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [message, setMessage] = useState<string>('');
+  const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,15 +24,23 @@ const Login: React.FC = () => {
     }
 
     try {
-      const response = await axios.post(`http://localhost:3000/login`, {
+      const response = await axios.post('http://localhost:3000/login', {
         email,
         password,
       });
 
-      // Store the JWT token in localStorage
-      localStorage.setItem('token', response.data.token);
-      setMessage('Login successful!');
-      console.log(response.data.token);
+      const userId = response.data.userId;
+
+      if (userId) {
+        // Store the user ID in localStorage
+        localStorage.setItem('userId', userId);
+        setMessage('Login successful!');
+
+        // Redirect to the Polls page
+        navigate('/polls');
+      } else {
+        setMessage('Login failed. Please check your credentials.');
+      }
     } catch (err) {
       setMessage('Login failed. Please check your credentials.');
     }

@@ -1,0 +1,47 @@
+/* src/components/Polls/Polls.css */
+
+.polls-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f4f4f4;
+    border-radius: 8px;
+  }
+  
+  .polls-container h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .message {
+    color: red;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .polls-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .poll-item {
+    background-color: #fff;
+    margin-bottom: 15px;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .poll-item-title {
+    font-size: 20px;
+    margin-bottom: 10px;
+    color: #333;
+  }
+  
+  .poll-item-description {
+    font-size: 16px;
+    color: #666;
+  }
+  
