@@ -43,6 +43,15 @@ const checkUser = async (uid) => {
   
 }
 
+const fetchUser = async (uid) => {
+  const result = await pool.query(
+    'SELECT * FROM users WHERE id = $1',
+    [uid]
+  );
+  console.log("User fetched : ",result)
+  
+}
+
 app.post('/register', async (req, res) => {
   const { username, email, password } = req.body;
   console.log(`Attempting to register user: ${username}, ${email}`);

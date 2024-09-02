@@ -33,15 +33,15 @@ curl -X POST http://localhost:3000/polls \
 curl -X POST http://localhost:3000/polls \
     -H "Content-Type: application/json" \
     -d '{
-          "title": "songs 2",
-          "description": "Vote for your favorite songs againg",
-          "poll_type": "multiple",  
-          "userId": 1 
+          "title": "potato",
+          "description": "potato?",
+          "poll_type": "single",  
+          "userId": 6 
         }'       
-curl -X POST http://localhost:3000/polls/2/options \
+curl -X POST http://localhost:3000/polls/4/options \
                             -H "Content-Type: application/json" \
                             -d '{
-                              "label": "rock"
+                              "label": "yes"
                             }'
 
 curl -X POST http://localhost:3000/polls/1/vote \
