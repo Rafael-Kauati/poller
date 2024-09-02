@@ -1,7 +1,8 @@
 // src/components/Polls/Polls.tsx
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './Polls.css'; // Ensure this file exists and contains the styles
+import Modal from '../Modal/Modal';
+import './Polls.css';
 
 interface Poll {
   id: number;
@@ -9,35 +10,75 @@ interface Poll {
   description: string;
 }
 
+interface Option {
+  id: number;
+  label: string;
+  votes: number;
+}
+
 const Polls: React.FC = () => {
   const [polls, setPolls] = useState<Poll[]>([]);
-  const [message, setMessage] = useState<string>('');
+  const [selectedPoll, setSelectedPoll] = useState<Poll | null>(null);
+  const [pollOptions, setPollOptions] = useState<Option[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
+    // Fetch all polls on component mount
     const fetchPolls = async () => {
       try {
         const response = await axios.get('http://localhost:3000/polls');
         setPolls(response.data);
       } catch (err) {
-        setMessage('Failed to fetch polls.');
+        console.error('Error fetching polls:', err);
       }
     };
 
     fetchPolls();
   }, []);
 
+  const handlePollClick = async (poll: Poll) => {
+    setSelectedPoll(poll);
+    try {
+      const response = await axios.get(`http://localhost:3000/polls/${poll.id}/options/votes`);
+      setPollOptions(response.data.options);
+      setIsModalOpen(true);
+    } catch (err) {
+      console.error('Error fetching poll options:', err);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedPoll(null);
+    setPollOptions([]);
+  };
+
   return (
     <div className="polls-container">
-      <h1>All Polls</h1>
-      {message && <p className="message">{message}</p>}
+      <h1>Polls</h1>
       <ul className="polls-list">
         {polls.map((poll) => (
-          <li key={poll.id} className="poll-item">
-            <h2 className="poll-item-title">{poll.title}</h2>
+          <li key={poll.id} className="poll-item" onClick={() => handlePollClick(poll)}>
+            <h3 className="poll-item-title">{poll.title}</h3>
             <p className="poll-item-description">{poll.description}</p>
           </li>
         ))}
       </ul>
+
+      <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
+        {selectedPoll && (
+          <div>
+            <h2>{selectedPoll.title}</h2>
+            <ul>
+              {pollOptions.map((option) => (
+                <li key={option.id}>
+                  {option.label} - {option.votes} votes
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 };
