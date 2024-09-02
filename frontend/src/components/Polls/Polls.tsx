@@ -70,7 +70,7 @@ const Polls: React.FC = () => {
       setMessage('You must select at least one option to vote.');
       return;
     }
-
+  
     try {
       // Loop over selected options to submit votes (if multiple)
       for (const optionId of selectedOptions) {
@@ -79,14 +79,19 @@ const Polls: React.FC = () => {
           userId, // Send userId in the vote request
         });
       }
-
+  
       setMessage('Vote submitted successfully!');
       setIsModalOpen(false);
     } catch (err) {
-      console.error('Error submitting vote:', err);
-      setMessage('Error submitting your vote. Please try again.');
+      if (axios.isAxiosError(err) && err.response?.status === 400) {
+        setMessage('Vote already registered.');
+      } else {
+        console.error('Error submitting vote:', err);
+        setMessage('Error submitting your vote. Please try again.');
+      }
     }
   };
+  
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
