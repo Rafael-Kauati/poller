@@ -30,7 +30,7 @@ const SignUp: React.FC = () => {
     }
 
     try {
-      const res = await axios.post(`http://localhost:3000/register`, {
+      await axios.post(`http://localhost:3000/register`, {
         username,
         email,
         password,
