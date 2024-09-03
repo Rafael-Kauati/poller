@@ -43,14 +43,29 @@ const checkUser = async (uid) => {
   
 }
 
-const fetchUser = async (uid) => {
-  const result = await pool.query(
-    'SELECT * FROM users WHERE id = $1',
-    [uid]
-  );
-  console.log("User fetched : ",result)
-  
-}
+app.get('/users/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const result = await pool.query(
+      'SELECT username, email FROM users WHERE id = $1',
+      [id]
+    );
+
+    // Check if the user was found
+    if (result.length === 0) {
+      return res.status(404).send(`User with id ${id} not found`);
+    }
+    console.log("User fetched : ",result)
+
+    // Send the user data as JSON
+    res.status(302).send(result);
+  } catch (err) {
+    console.error(`Error fetching user with id ${id}:`, err);
+    res.status(500).send('Error fetching user');
+  }
+});
+
 
 app.post('/register', async (req, res) => {
   const { username, email, password } = req.body;

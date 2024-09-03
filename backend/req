@@ -66,3 +66,4 @@ error down
 
 curl -X GET http://localhost:3000/polls/2/options
 
+curl -X GET http://localhost:3000/users/6
