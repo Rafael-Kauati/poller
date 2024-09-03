@@ -256,17 +256,22 @@ app.post('/polls/:pollId/vote', async (req, res) => {
 });
 
 
-// Fetch all polls
+// Fetch all polls with the creator's username
 app.get('/polls', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM polls');
-    console.log(result)
+    const result = await pool.query(`
+      SELECT p.id, p.title, p.description, p.created_by, p.poll_type, p.created_at, u.username AS creator_username
+      FROM polls p
+      JOIN users u ON p.created_by = u.id
+    `);
+
     res.json(result);
   } catch (err) {
     console.error('Error fetching polls:', err);
     res.status(500).send('Error fetching polls');
   }
 });
+
 
 
 // Fetch all polls belonging to a user
