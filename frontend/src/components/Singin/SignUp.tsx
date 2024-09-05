@@ -32,11 +32,16 @@ const SignUp: React.FC = () => {
     }
 
     try {
-      await axios.post(`http://localhost:3000/register`, {
+      const response = await axios.post(`http://localhost:3000/register`, {
         username,
         email,
         password,
       });
+
+      const userId = response.data.userId;
+      localStorage.setItem('userId', userId);
+
+
       setMessage('Registration successful!');
       navigate('/polls');
 

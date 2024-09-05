@@ -187,6 +187,7 @@ app.post('/polls/:pollId/vote', async (req, res) => {
   const { optionId, userId } = req.body; // Include userId in the request body
   const usercheck = checkUser(userId)
 
+  console.log(`User of id ${userId} voting in poll ${pollId} on option with id ${optionId}`)
 
   //Check if user exist
   if(Array.isArray(usercheck) && !(usercheck.length === 0)){
@@ -227,8 +228,8 @@ app.post('/polls/:pollId/vote', async (req, res) => {
         'SELECT * FROM votes WHERE poll_id = $1 AND user_id = $2',
         [pollId, userId]
       );
-      console.log("fetch res : ",existingVote)
       if (Array.isArray(existingVote) && !(existingVote.length === 0)) {
+        console.log("single vote fetch result : ",existingVote)
         return res.status(400).send('User has already voted in this poll');
       }
 
@@ -238,8 +239,8 @@ app.post('/polls/:pollId/vote', async (req, res) => {
         'SELECT * FROM votes WHERE poll_id = $1 AND user_id = $2 AND option_id = $3',
         [pollId, userId,optionId ]
       );
-      console.log("fetch res : ",existingVote)
       if (Array.isArray(existingVote) && !(existingVote.length === 0)) {
+        console.log("multply vote fetch result : ",existingVote)
         return res.status(400).send('User has already voted in this option');
       }
     }

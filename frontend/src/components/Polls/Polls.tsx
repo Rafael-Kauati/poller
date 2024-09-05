@@ -156,7 +156,7 @@ const Polls: React.FC = () => {
                   />
                   {option.label}
                 </label>
-                <span>{option.votes} votes</span>
+                <span>  votes</span>
               </div>
             ))}
             <button type="submit">Vote</button>
