@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './Polls.css';
 import Modal from '../Modal/Modal';
+import CreatePollModal from '../CreatePollModal/CreatePollModal';
 
 interface Poll {
   id: number;
@@ -23,6 +24,7 @@ const Polls: React.FC = () => {
   const [polls, setPolls] = useState<Poll[]>([]);
   const [selectedPoll, setSelectedPoll] = useState<Poll | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false); // For create poll modal
   const [options, setOptions] = useState<Option[]>([]);
   const [error, setError] = useState<string>('');
 
@@ -30,24 +32,7 @@ const Polls: React.FC = () => {
     const fetchPolls = async () => {
       try {
         const response = await axios.get('http://localhost:3000/polls');
-        const pollsData = response.data;
-
-        const pollsWithCreators = await Promise.all(
-          pollsData.map(async (poll: Poll) => {
-            try {
-              const creatorResponse = await axios.get(
-                `http://localhost:3000/users/${poll.created_by}`
-              );
-              poll.creator_username = creatorResponse.data.username;
-              return poll;
-            } catch (error) {
-              console.error(`Error fetching creator for poll ${poll.id}:`, error);
-              return poll;
-            }
-          })
-        );
-
-        setPolls(pollsWithCreators);
+        setPolls(response.data);
       } catch (err) {
         setError('Error fetching polls');
         console.error('Error fetching polls:', err);
@@ -72,57 +57,18 @@ const Polls: React.FC = () => {
     }
   };
 
-  const handleVote = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!selectedPoll) return;
-
-    const selectedOptions = Array.from(
-      (e.target as HTMLFormElement).elements
-    )
-      .filter((input: any) => input.checked)
-      .map((input: any) => input.value);
-
-    try {
-      if (selectedPoll.poll_type === 'single') {
-        if (selectedOptions.length !== 1) {
-          alert('Please select exactly one option.');
-          return;
-        }
-      } else if (selectedPoll.poll_type === 'multiple') {
-        // For multiple polls, zero or more options can be selected
-      }
-
-      await Promise.all(
-        selectedOptions.map((optionId) =>
-          axios.post(`http://localhost:3000/polls/${selectedPoll.id}/vote`, {
-            optionId,
-            userId: localStorage.getItem('userId'), // Assuming userId is stored in localStorage
-          })
-        )
-      );
-
-      alert('Vote registered successfully');
-      handleCloseModal(); // Close the modal after successful voting
-    } catch (err: unknown) {
-      if (axios.isAxiosError(err) && err.response) {
-        if (err.response.status === 400) {
-          alert('Vote already registered');
-        } else {
-          console.error('Error voting:', err.response.data);
-          alert('Error registering vote');
-        }
-      } else {
-        console.error('An unexpected error occurred:', err);
-        alert('An unexpected error occurred');
-      }
-    }
-  };
-
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedPoll(null);
     setOptions([]);
+  };
+
+  const handleCreatePoll = () => {
+    setIsCreateModalOpen(true); // Open create poll modal
+  };
+
+  const handleCloseCreateModal = () => {
+    setIsCreateModalOpen(false);
   };
 
   return (
@@ -134,34 +80,50 @@ const Polls: React.FC = () => {
           <div key={poll.id} className="poll-card">
             <h3>{poll.title}</h3>
             <p>{poll.description}</p>
-            <p>Created by: {poll.creator_username || 'Unknown'}</p>
             <button onClick={() => handleViewPoll(poll.id)}>View Poll</button>
           </div>
         ))}
       </div>
 
+      {/* Button to open the Create Poll modal */}
+      <button onClick={handleCreatePoll}>Create New Poll</button>
+
+      {/* Modal for viewing poll details */}
       {isModalOpen && selectedPoll && (
-        <Modal isOpen={isModalOpen} onClose={handleCloseModal} pollId={selectedPoll.id} userId={parseInt(localStorage.getItem('userId') || '0')}>
+        <Modal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          pollId={selectedPoll.id}
+          userId={parseInt(localStorage.getItem('userId') || '0')}
+        >
           <h2>{selectedPoll.title}</h2>
           <p>{selectedPoll.description}</p>
-          <form onSubmit={handleVote}>
+          <form>
             {options.map((option) => (
               <div key={option.id} className="option-item">
                 <label>
                   <input
-                    type={selectedPoll.poll_type === 'single' ? 'radio' : 'checkbox'}
+                    type={
+                      selectedPoll.poll_type === 'single' ? 'radio' : 'checkbox'
+                    }
                     name="pollOption"
                     value={option.id}
-                    defaultChecked={false}
                   />
                   {option.label}
                 </label>
-                <span>  votes</span>
+                <span> votes</span>
               </div>
             ))}
-            <button type="submit">Vote</button>
           </form>
         </Modal>
+      )}
+
+      {/* Modal for creating a new poll */}
+      {isCreateModalOpen && (
+        <CreatePollModal
+          isOpen={isCreateModalOpen}
+          onClose={handleCloseCreateModal}
+        />
       )}
     </div>
   );

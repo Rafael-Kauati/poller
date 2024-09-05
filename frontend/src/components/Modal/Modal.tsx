@@ -10,12 +10,12 @@ interface Option {
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-  children: React.ReactNode; // Add this line to accept children
-  pollId: any
-  userId: any
+  pollId: number;
+  userId: number;
+  children: React.ReactNode; // Ensures we pass children content into the modal
 }
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, pollId, userId }) => {
+const Modal: React.FC<ModalProps> = ({ isOpen, onClose, pollId, userId, children }) => {
   const [options, setOptions] = useState<Option[]>([]);
   const [selectedOptions, setSelectedOptions] = useState<number[]>([]);
   const [message, setMessage] = useState<string>('');
@@ -42,7 +42,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, pollId, userId }) => {
 
       await axios.post(`http://localhost:3000/polls/${pollId}/vote`, {
         userId,
-        optionId: selectedOptions[0], // For single-choice polls
+        optionId: selectedOptions[0], // Adjust based on single/multiple choice
       });
 
       setMessage('Vote recorded successfully!');
@@ -57,13 +57,15 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, pollId, userId }) => {
     }
   };
 
+  // Modal should not render at all if it's not open
   if (!isOpen) return null;
 
   return (
     <div className="modal-overlay">
       <div className="modal-content">
-        <button onClick={onClose}>Close</button>
+        <button className="close-button" onClick={onClose}>×</button>
         <h2>Vote for Poll {pollId}</h2>
+        {children}  {/* Pass children to display custom content */}
         <ul>
           {options.map(option => (
             <li key={option.id}>
@@ -82,7 +84,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, pollId, userId }) => {
                 />
                 {option.label}
               </label>
-              <span> {option.votes} votes</span>
+              <span>{option.votes} votes</span>
             </li>
           ))}
         </ul>

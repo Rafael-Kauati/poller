@@ -265,7 +265,7 @@ app.get('/polls', async (req, res) => {
       FROM polls p
       JOIN users u ON p.created_by = u.id
     `);
-
+    console.log("Polls fetched : ",result)
     res.json(result);
   } catch (err) {
     console.error('Error fetching polls:', err);
